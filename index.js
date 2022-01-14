@@ -4,6 +4,7 @@ let app = express();
 app.listen(3000);
 var bodyParser = require('body-parser');
 let mysql = require("mysql");
+let jwt = require("jsonwebtoken");
  let connection = mysql.createConnection(
     {
         host: "localhost",
@@ -99,18 +100,38 @@ console.log("Connected to database");
 
 });
 
+//middlewares
+
 app.use(function(req, res, next){
     console.log("hit on middleware");
     next(); 
 });
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+let urlEncodedParser = app.use(bodyParser.urlencoded({ extended: false }));
+let jsonParser = app.use(bodyParser.json());
+function verifyToken(req, res, next){
+    let auth = req.headers.authorization;
+    console.log(auth);
+    if(auth == undefined){
+        res.status(404).send("require access token");
+    }else{
+        let token = auth.split(" ")[1];
+        jwt.verify(token, "secretKey", function(error, decodedToken){
+            if(error){
+             res.status(404).send("invalid access token");
+            }else{
+                res.locals.token = token;
+                next();
+            }
+        });
+    }
+}
 
-app.get("/get", function(request, response){
-    response.send({ get: true });
+
+app.get("/get",verifyToken, function(request, response){
+    response.send({ get: true, accestoken: response.locals.token});
 });
 
-app.post("/post", function(req, res){
+app.post("/post", jsonParser, function(req, res){
     //res.sendStatus(404);
     res.send({ post: true , name: req.body.name, age: req.body.age, place: req.body.Place});
 });
@@ -129,4 +150,23 @@ res.send({
     testparameter1: req.params.id,
     testparameter2: req.params.phone
 });
+});
+
+//jwt, authentication
+app.post("/login", function(req, res){
+    if(req.body.username == undefined || req.body.password == undefined){
+        res.status(404).send({error: "please provide username or password"});
+        return;
+    }
+    let username = req.body.username;
+    let password = req.body.password;
+    connection.query("SELECT `display_name` FROM `users` WHERE user_name = 'faizahmmd' AND password = 'password1'", function(error, result){
+if(error || result.length == 0){
+    response.status(404).send({error: "no user found"});
+    return;
+}
+let dataToSend = {success: "login success", displayname: result[0].display_name};
+let token = jwt.sign(dataToSend, "secretKey", {expiresIn: 6000000000});
+res.status(200).send({accesstoken: token, data: dataToSend});
+    });
 });
