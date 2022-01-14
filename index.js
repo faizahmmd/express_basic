@@ -58,6 +58,45 @@ console.log("Connected to database");
 //       }
 //       console.log(result);
 // });
+
+//Relational dtabase examples, already created 2 tables students and marks.
+
+// connection.query("SELECT * FROM `marks` join `students` on marks.student_id = students.id", function(error, result){
+//     if(error){
+//         throw (error);
+//     }
+//     console.log(result);
+// });
+
+//join & inner join both are same.
+// connection.query("SELECT * FROM `marks` inner join `students` on marks.student_id = students.id", function(error, result){
+//     if(error){
+//         throw (error);
+//     }
+//     console.log(result);
+// });
+
+// connection.query("SELECT * FROM `marks` left join `students` on marks.student_id = students.id", function(error, result){
+//     if(error){
+//         throw (error);
+//     }
+//     console.log(result);
+// });
+
+// connection.query("SELECT * FROM `marks` right join `students` on marks.student_id = students.id", function(error, result){
+//     if(error){
+//         throw (error);
+//     }
+//     console.log(result);
+// });
+
+// connection.query("SELECT * FROM `marks` cross join `students`", function(error, result){
+//     if(error){
+//         throw (error);
+//     }
+//     console.log(result);
+// });
+
 });
 
 app.use(function(req, res, next){
