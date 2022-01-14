@@ -3,10 +3,66 @@ let express = require("express");
 let app = express();
 app.listen(3000);
 var bodyParser = require('body-parser');
+let mysql = require("mysql");
+ let connection = mysql.createConnection(
+    {
+        host: "localhost",
+        user: "root",
+        password: "",
+        //If database is already created.
+        database: "mydatabase"
+    }
+);
+connection.connect(function(error){
+if(error){
+    throw error;
+}
+console.log("Connected to database");
+//To create database using code.
+//connection.query("create database mydatabase");
+
+//For CRUD operations.
+// connection.query("create table categories(id int primary key auto_increment, categories varchar(50))", function(error, result){
+//     if(error){
+//       throw (error);
+//     }
+//     console.log(result);
+// });
+// connection.query("INSERT INTO `categories`(`categories`) VALUES ('[indoor, out door]')", function(error, result){
+//     if(error){
+//         throw (error);
+//       }
+//       console.log(result);
+// });
+// connection.query("UPDATE `categories` SET `categories`='[indoor, out door]' WHERE id = 1", function(error, result){
+//     if(error){
+//         throw (error);
+//       }
+//       console.log(result);
+// });
+// connection.query("DELETE FROM `categories` WHERE id = 4", function(error, result){
+//     if(error){
+//         throw (error);
+//       }
+//       console.log(result);
+// });
+// connection.query("SELECT * FROM `categories` WHERE id = 1", function(error, result){
+//     if(error){
+//         throw (error);
+//       }
+//       console.log(result);
+// });
+// connection.query("SELECT `id`, `categories` FROM `categories` WHERE id = 2", function(error, result){
+//     if(error){
+//         throw (error);
+//       }
+//       console.log(result);
+// });
+});
 
 app.use(function(req, res, next){
     console.log("hit on middleware");
-    next();
+    next(); 
 });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
